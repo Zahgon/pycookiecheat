@@ -74,7 +74,7 @@ def deprecation_warning(msg: str) -> None:
 
     `stacklevel=3` tries to show the appropriate calling code to the user.
     """
-    warn(msg, DeprecationWarning, stacklevel=3)
+    pass
 
 
 @unique
@@ -111,11 +111,7 @@ class BrowserType(str, Enum):
         Traceback (most recent call last):
         ValueError: 'edge' is not a valid BrowserType
         """
-        folded = value.casefold()
-        for member in cls:
-            if member.value == folded:
-                return member
-        raise ValueError(f"{value!r} is not a valid {cls.__qualname__}")
+        pass
 
 
 def write_cookie_file(path: Path | str, cookies: list[Cookie]) -> None:
