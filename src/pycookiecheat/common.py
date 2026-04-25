@@ -35,15 +35,7 @@ class Cookie:
 
         See details at http://www.cookiecentral.com/faq/#3.5
         """
-        return "\t".join([
-            self.host_key,
-            "TRUE",
-            self.path,
-            "TRUE" if self.is_secure else "FALSE",
-            str(self.expires_utc),
-            self.name,
-            self.value,
-        ])
+        pass
 
 
 def generate_host_keys(hostname: str) -> t.Iterator[str]:
@@ -58,15 +50,7 @@ def generate_host_keys(hostname: str) -> t.Iterator[str]:
 
     Treat "localhost" explicitly by returning only itself.
     """
-    if hostname == "localhost":
-        yield hostname
-        return
-
-    labels = hostname.split(".")
-    for i in range(2, len(labels) + 1):
-        domain = ".".join(labels[-i:])
-        yield domain
-        yield "." + domain
+    pass
 
 
 def deprecation_warning(msg: str) -> None:
@@ -116,17 +100,7 @@ class BrowserType(str, Enum):
 
 def write_cookie_file(path: Path | str, cookies: list[Cookie]) -> None:
     """Write cookies to a file in Netscape Cookie File format."""
-    path = Path(path)
-    # Some programs won't recognize this as a valid cookie file without the
-    # header
-    output = (
-        "\n".join(
-            ["# Netscape HTTP Cookie File"]
-            + [c.as_cookie_file_line() for c in cookies]
-        )
-        + "\n"
-    )
-    path.write_text(output)
+    pass
 
 
 def get_domain(url: str) -> str:
@@ -134,12 +108,7 @@ def get_domain(url: str) -> str:
 
     If the scheme is not specified, `https://` is assumed.
     """
-    parsed_url = urllib.parse.urlparse(url)
-    if not parsed_url.scheme:
-        parsed_url = urllib.parse.urlparse(f"https://{url}")
-
-    domain = parsed_url.netloc
-    return domain
+    pass
 
 
 def get_cookies(
@@ -175,23 +144,4 @@ def get_cookies(
     Returns:
         Dictionary of cookie values for URL
     """
-    if browser == BrowserType.FIREFOX:
-        cookies = pycookiecheat.firefox_cookies(
-            url,
-            browser=browser,
-            as_cookies=as_cookies,
-            cookie_file=cookie_file,
-            curl_cookie_file=curl_cookie_file,
-            profile_name=profile_name,
-        )
-    else:
-        cookies = pycookiecheat.chrome_cookies(
-            url,
-            browser=browser,
-            as_cookies=as_cookies,
-            cookie_file=cookie_file,
-            curl_cookie_file=curl_cookie_file,
-            password=password,
-        )
-
-    return cookies
+    pass

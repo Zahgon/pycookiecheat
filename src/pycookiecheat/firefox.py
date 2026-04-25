@@ -74,13 +74,7 @@ def _get_profiles_dir_for_os(
     os: str, browser: BrowserType = BrowserType.FIREFOX
 ) -> Path:
     """Retrieve the default directory containing the user profiles."""
-    try:
-        os_config = FIREFOX_OS_PROFILE_DIRS[os]
-    except KeyError:
-        raise ValueError(
-            f"OS must be one of {list(FIREFOX_OS_PROFILE_DIRS.keys())}"
-        )
-    return Path(os_config[browser]).expanduser()
+    pass
 
 
 def _find_firefox_default_profile(firefox_dir: Path) -> str:
@@ -103,30 +97,11 @@ def _find_firefox_default_profile(firefox_dir: Path) -> str:
 
     https://support.mozilla.org/en-US/kb/understanding-depth-profile-installation
     """
-    profiles_ini = configparser.ConfigParser()
-    profiles_ini.read(firefox_dir / "profiles.ini")
-    installs = [s for s in profiles_ini.sections() if s.startswith("Install")]
-    if installs:  # Firefox >= 67
-        # Heuristic: Take the most recently created profile which should be the active one.
-        return profiles_ini[installs[-1]]["Default"]
-    else:  # Firefox < 67
-        profiles = [
-            s for s in profiles_ini.sections() if s.startswith("Profile")
-        ]
-        for profile in profiles:
-            if profiles_ini[profile].get("Default") == "1":
-                return profiles_ini[profile]["Path"]
-        if profiles:
-            return profiles_ini[profiles[0]]["Path"]
-        raise Exception("no profiles found at {}".format(firefox_dir))
+    pass
 
 
 def _copy_if_exists(src: list[Path], dest: Path) -> None:
-    for file in src:
-        try:
-            shutil.copy2(file, dest)
-        except FileNotFoundError as e:
-            logger.exception(e)
+    pass
 
 
 def _load_firefox_cookie_db(
@@ -159,29 +134,7 @@ def _load_firefox_cookie_db(
     WAL file and then merges any outstanding writes, to make sure the cookies
     DB has the most recent data.
     """
-
-    if cookie_file:
-        cookies_db = Path(cookie_file)
-        cookies_wal = Path(cookies_db).parent / "cookies.sqlite-wal"
-
-    else:
-        if not profile_name:
-            profile_name = _find_firefox_default_profile(profiles_dir)
-        for profile_dir in profiles_dir.glob(profile_name):
-            if (profile_dir / "cookies.sqlite").exists():
-                break
-        else:
-            raise FirefoxProfileNotPopulatedError(profiles_dir / profile_name)
-        cookies_db = profile_dir / "cookies.sqlite"
-        cookies_wal = profile_dir / "cookies.sqlite-wal"
-
-    _copy_if_exists([cookies_db, cookies_wal], tmp_dir)
-    db_file = tmp_dir / "cookies.sqlite"
-    if not db_file.exists():
-        raise FileNotFoundError(f"no Firefox cookies DB in temp dir {tmp_dir}")
-    with sqlite3.connect(db_file) as con:
-        con.execute("PRAGMA journal_mode=OFF;")  # merge WAL
-    return db_file
+    pass
 
 
 def firefox_cookies(
@@ -213,41 +166,4 @@ def firefox_cookies(
     Returns:
         Dictionary of cookie values for URL
     """
-    domain = get_domain(url)
-
-    # Force a ValueError early if a string of an unrecognized browser is passed
-    browser = BrowserType(browser)
-
-    if sys.platform.startswith("linux"):
-        os = "linux"
-    elif sys.platform == "darwin":
-        os = "macos"
-    elif sys.platform == "win32":
-        os = "windows"
-    else:
-        raise OSError(
-            "This script only works on "
-            + ", ".join(FIREFOX_OS_PROFILE_DIRS.keys())
-        )
-
-    profiles_dir = _get_profiles_dir_for_os(os, browser)
-
-    cookies: list[Cookie] = []
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        db_file = _load_firefox_cookie_db(
-            profiles_dir, Path(tmp_dir), profile_name, cookie_file
-        )
-        for host_key in generate_host_keys(domain):
-            with sqlite3.connect(db_file) as con:
-                con.row_factory = sqlite3.Row
-                res = con.execute(FIREFOX_COOKIE_SELECT_SQL, (host_key,))
-                for row in res.fetchall():
-                    cookies.append(Cookie(**row))
-
-    if curl_cookie_file:
-        write_cookie_file(curl_cookie_file, cookies)
-
-    if as_cookies:
-        return cookies
-
-    return {c.name: c.value for c in cookies}
+    pass
