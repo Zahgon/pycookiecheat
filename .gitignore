@@ -13,3 +13,6 @@ docs/
 *.egg-info/
 cache/
 .mypy_cache/
+
+.aider*
+logs/
